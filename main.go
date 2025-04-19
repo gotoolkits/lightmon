@@ -17,11 +17,11 @@ import (
 	"syscall"
 	"time"
 
-	"lightMon-ebpf/conv"
-	"lightMon-ebpf/dockerinfo"
-	. "lightMon-ebpf/event"
-	"lightMon-ebpf/linux"
-	. "lightMon-ebpf/outputer"
+	"github.com/gotoolkits/lightmon/conv"
+	"github.com/gotoolkits/lightmon/dockerinfo"
+	. "github.com/gotoolkits/lightmon/event"
+	"github.com/gotoolkits/lightmon/linux"
+	. "github.com/gotoolkits/lightmon/outputer"
 
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/perf"

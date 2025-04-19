@@ -3,10 +3,11 @@ package outputer
 import (
 	"encoding/json"
 	"fmt"
-	. "lightMon-ebpf/event"
-	"lightMon-ebpf/filter"
 	"strconv"
 	"time"
+
+	. "github.com/gotoolkits/lightmon/event"
+	"github.com/gotoolkits/lightmon/filter"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	log "github.com/sirupsen/logrus"

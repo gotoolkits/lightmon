@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	. "lightMon-ebpf/event"
+	. "github.com/gotoolkits/lightmon/event"
 
 	"github.com/stretchr/testify/assert"
 )

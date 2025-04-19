@@ -1,4 +1,4 @@
-module lightMon-ebpf
+module github.com/gotoolkits/lightmon
 
 go 1.23
 

@@ -4,7 +4,7 @@ import (
 	"net"
 	"testing"
 
-	. "lightMon-ebpf/event"
+	. "github.com/gotoolkits/lightmon/event"
 )
 
 func TestPortFilter_Match(t *testing.T) {

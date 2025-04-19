@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	. "lightMon-ebpf/event"
+	. "github.com/gotoolkits/lightmon/event"
 )
 
 
