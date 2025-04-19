@@ -1,4 +1,4 @@
-BINARY_NAME=lightMon-ebpf
+BINARY_NAME=lightmon
  
 all: build test
  

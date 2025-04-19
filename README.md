@@ -1,78 +1,78 @@
-# lightMon-ebpf
+# lightmon
 
-lightMon-ebpf 是一款基于eBPF技术轻量级、Docker/K8s容器感知的网络流量监控工具。它能够实时捕获并分析主机及容器应用程序建立的网络连接，提供多种格式的监控数据输出，适用于系统监控、安全审计和网络故障排查等场景。
+lightmon is a lightweight, Docker/K8s container-aware network traffic monitoring tool based on eBPF technology. It can capture and analyze network connections established by host and container applications in real-time, providing monitoring data in multiple formats. Suitable for system monitoring, security auditing, and network troubleshooting scenarios.
 
-## 架构概述
+## Architecture Overview
 
 ```
 +---------------------+
-|   用户空间程序       |
-|  (Go语言实现)        |
+|   User-space Program |
+|  (Implemented in Go) |
 +----------+----------+
            |
-           | 通过perf buffer
+           | via perf buffer
            |
 +----------v----------+
-|   eBPF程序          |
-|  (C语言实现)         |
-|   - 跟踪系统调用     |
-|   - 过滤网络事件     |
+|   eBPF Program      |
+|  (Implemented in C) |
+|   - Trace syscalls  |
+|   - Filter network events |
 +---------------------+
 ```
 
-## 功能特点
+## Features
 
-- **轻量高效**：基于eBPF技术，极低性能开销
-- **全面监控**：跟踪TCP连接信息
-- **容器感知**：自动识别K8s/Docker容器环境
-- **进程感知**：自动识别流量关联进程及程序位置信息
-- **灵活过滤**：支持多条件组合过滤规则
-- **多格式输出**：支持日志文件、JSON、表格等多种输出格式
+- **Lightweight & Efficient**: Based on eBPF technology with minimal performance overhead
+- **Comprehensive Monitoring**: Tracks TCP connection information
+- **Container-Aware**: Automatically identifies K8s/Docker container environments
+- **Process-Aware**: Automatically identifies processes associated with traffic and their executable paths
+- **Flexible Filtering**: Supports multi-condition combined filtering rules
+- **Multiple Output Formats**: Supports log files, JSON, tables and other output formats
 
-## 安装指南
+## Installation Guide
 
-### 依赖环境
+### Dependencies
 
 ```sh
-# 基础依赖
+# Basic dependencies
 sudo apt install -y llvm16 clang16
 
-# Go环境 (建议1.18+)
+# Go environment (recommended 1.18+)
 ```
 
-### 编译安装
+### Build & Install
 
 ```sh
-git clone lightMon-ebpf
-cd lightMon-ebpf 
+git clone https://github.com/gotoolkits/lightmon.git
+cd lightmon
 
 go mod tidy
 make build
 ```
 
-## 使用说明
+## Usage
 
-### 基本使用
+### Basic Usage
 
 ```sh
-# 使用默认配置运行
-./lightMon-ebpf
+# Run with default configuration
+./lightmon
 
-# 指定配置文件
-./lightMon-ebpf -c config.yaml
+# Specify config file
+./lightmon -c config.yaml
 ```
 
-### 输出格式
+### Output Formats
 
-lightMon-ebpf 支持多种输出格式 '-f'：
+lightmon supports multiple output formats ('-f'):
 
-1. **LOG文本格式** (默认)
+1. **LOG format** (default)
    ```
-   [容器名称] [目标IP] [目标端口] [协议] [日志级别] [日志消息] [PID] [进程参数] [进程名] [时间] [用户名]
+   [container] [dest IP] [dest port] [protocol] [level] [message] [PID] [process args] [process name] [time] [user]
    {"conatiner":"dreamy_carson","dip":"183.2.172.17","dport":"65535","ipv6":0,"level":"info","msg":"","pid":"501750","procArgs":"www.baidu.com","procPath":"/usr/bin/busybox","time":"2025-04-17T14:01:48+08:00","user":"root"}
    ```
 
-2. **JSON格式** (使用 `-output json`)
+2. **JSON format** (use `-output json`)
    ```json
    {
      "kernelTime": "13898485459656",
@@ -88,7 +88,7 @@ lightMon-ebpf 支持多种输出格式 '-f'：
    }
    ```
 
-3. **表格格式** (使用 `-output table`)
+3. **Table format** (use `-output table`)
    ```
    +---------------------+-------+--------+-------+-----------------+------------------------+
    | TIME     | USER  | PID   | AF    | DESTINATION  | CONTAINER    |     PROCESS            |
@@ -97,90 +97,90 @@ lightMon-ebpf 支持多种输出格式 '-f'：
    +---------------------+-------+--------+-------+-----------------+------------------------+
    ```
 
-### 过滤功能
+### Filtering
 
-通过 `-exclude` 参数可以排除不需要监控的连接：
-
-```sh
-# 排除特定端口的流量
-./lightMon-ebpf -exclude 'dport=80'
-
-# 排除特定IP范围的流量
-./lightMon-ebpf -exclude 'dip="192.168.1.0/24"'
-
-# 组合条件过滤
-./lightMon-ebpf -exclude 'dport=80;dip="192.168.1.1";keyword="nginx"'
-```
-
-#### 过滤语法
-
-- **基本条件**:
-  - `dport=端口号` - 目标端口过滤
-  - `dip='IP/CIDR'` - 目标IP过滤
-  - `keyword='字符串'` - 进程路径与名称过滤
-  - `container='字符串'` - 容器名称过滤
-
-- **逻辑运算符**:
-  - `&&` - AND逻辑
-  - `||` - OR逻辑 
-  - `;` - 条件组分隔符
-
-#### 过滤示例
-
-1. 排除本地网络和DNS流量:
-   ```sh
-   ./lightMon-ebpf -exclude 'dip="192.168.1.0/24";dport=53'
-   ```
-
-2. 排除特定服务的监控:
-   ```sh
-   ./lightMon-ebpf -exclude 'keyword="nginx";keyword="mysql"'
-   ```
-
-3. 复杂条件组合:
-    ```sh
-    ./lightMon-ebpf -exclude 'dip="10.0.0.1" && dport=80; dip="10.0.0.1" && dport=443'
-    ```
-
-4. 排除特定容器名称“关键词”的流量:
-    ```sh
-    ./lightMon-ebpf -exclude 'container="nginx";container="redis"'
-    ```
-
-## 开发指南
-
-### 代码结构
-
-```
-lightMon-ebpf/
-├── conv/          # 协议转换
-├── dockerinfo/    # 容器信息处理
-├── event/         # 事件类型定义
-├── filter/        # 过滤逻辑
-├── headers/       # eBPF头文件
-├── linux/         # Linux特定功能
-├── outputer/      # 输出处理器
-├── sysEnterConnectSrc.c  # eBPF主程序
-└── main.go        # 程序入口
-```
-
-### 构建测试
+Use `-exclude` parameter to exclude unwanted connections:
 
 ```sh
-# 运行单元测试
+# Exclude traffic to specific ports
+./lightmon -exclude 'dport=80'
+
+# Exclude traffic to specific IP ranges
+./lightmon -exclude 'dip="192.168.1.0/24"'
+
+# Combined conditions
+./lightmon -exclude 'dport=80;dip="192.168.1.1";keyword="nginx"'
+```
+
+#### Filter Syntax
+
+- **Basic conditions**:
+  - `dport=port` - Filter by destination port
+  - `dip='IP/CIDR'` - Filter by destination IP
+  - `keyword='string'` - Filter by process path/name
+  - `container='string'` - Filter by container name
+
+- **Logical operators**:
+  - `&&` - AND logic
+  - `||` - OR logic
+  - `;` - Condition group separator
+
+#### Filter Examples
+
+1. Exclude local network and DNS traffic:
+   ```sh
+   ./lightmon -exclude 'dip="192.168.1.0/24";dport=53'
+   ```
+
+2. Exclude specific services:
+   ```sh
+   ./lightmon -exclude 'keyword="nginx";keyword="mysql"'
+   ```
+
+3. Complex condition combinations:
+   ```sh
+   ./lightmon -exclude 'dip="10.0.0.1" && dport=80; dip="10.0.0.1" && dport=443'
+   ```
+
+4. Exclude traffic from containers with specific names:
+   ```sh
+   ./lightmon -exclude 'container="nginx";container="redis"'
+   ```
+
+## Development Guide
+
+### Code Structure
+
+```
+lightmon/
+├── conv/          # Protocol conversion
+├── dockerinfo/    # Container info processing
+├── event/         # Event type definitions
+├── filter/        # Filtering logic
+├── headers/       # eBPF headers
+├── linux/         # Linux-specific functions
+├── outputer/      # Output handlers
+├── sysEnterConnectSrc.c  # Main eBPF program
+└── main.go        # Program entry
+```
+
+### Build & Test
+
+```sh
+# Run unit tests
 go test ./...
 
-# 构建二进制
+# Build binary
 make build
 
-# 清理构建
+# Clean build
 make clean
 ```
 
-## 贡献
+## Contributing
 
-欢迎提交Issue和PR，贡献流程遵循标准GitHub流程。
+Issues and PRs are welcome. Contribution process follows standard GitHub workflow.
 
-## 许可证
+## License
 
-Apache License 2.0，详见LICENSE.txt文件。
+Apache License 2.0, see LICENSE.txt file for details.
