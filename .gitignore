@@ -2,6 +2,9 @@ lightMon-ebpf
 TODO.md
 bin/**/lightMon-ebpf
 
+.DS_Store
+bin/.DS_Store
+
 # generated files
 *.o
 bpf_*_bpfeb.go
