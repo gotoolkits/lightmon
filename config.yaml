@@ -1,0 +1,7 @@
+ipv6: false
+k8s: false
+format: "logfile"
+logPath: "/data/lightMon-ebpf/logs"
+docker_runtime: "/run/docker"
+docker_data: "/data/docker"
+exclude: "keyword='qcloud'||dport='53'"

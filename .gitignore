@@ -1,0 +1,8 @@
+lightMon-ebpf
+TODO.md
+bin/**/lightMon-ebpf
+
+# generated files
+*.o
+bpf_*_bpfeb.go
+bpf_*_bpfel.go
