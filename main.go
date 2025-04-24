@@ -32,7 +32,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc clang-16 -cflags "-O2 -g -Wall -Werror" -target amd64,arm64 bpf fentryTcpConnectSrc.c -- -Iheaders/
+//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc clang16 -cflags "-O2 -g -Wall -Werror" -target amd64,arm64 bpf fentryTcpConnectSrc.c -- -Iheaders/
 
 type Config struct {
 	IPv6            bool   `yaml:"ipv6"`
@@ -90,7 +90,7 @@ func initConfigs() {
 	flag.StringVar(&config.DockerRuntime, "docker_runtime", "/run/docker", "docker runtime dir path")
 	flag.StringVar(&config.DockerData, "docker_data", "/data/docker", "docker data dir path")
 	flag.StringVar(&config.ExcludeFilter, "exclude", "", "exclude output filter")
-	flag.IntVar(&config.EbpfType,"ebpf_type",0,"")
+	flag.IntVar(&config.EbpfType,"ebpf_type",0," 0(FENTRY) | 1(TRACEPOINT) ")
 	flag.StringVar(&configPath, "c", "config.yaml", "config file path")
 	flag.Parse()
 
@@ -100,6 +100,8 @@ func initConfigs() {
 			log.Printf("Failed to load config file: %v, using default values", err)
 		}
 	}
+
+	ebpfType = config.EbpfType
 
 	Set_Docker_Path(config.DockerRuntime, config.DockerData)
 	if ok := Runtime_Verifier(); !ok {
@@ -131,7 +133,7 @@ func setupBpfFentryWorkers() {
 	// Load pre-compiled programs and maps into the kernel.
 	objs := bpfObjects{}
 	if err := loadBpfObjects(&objs, nil); err != nil {
-		log.Fatalf("loading objects: %v", err)
+		log.Fatalf("loading fentry objects: %v", err)
 	}
 	defer objs.Close()
 
@@ -241,7 +243,7 @@ func setupBpfTPWorkers() {
 	// Load pre-compiled programs and maps into the kernel.
 	objs := bpfObjects{}
 	if err := loadBpfObjects(&objs, nil); err != nil {
-		log.Fatalf("loading objects: %v", err)
+		log.Fatalf("loading tracepoint objects: %v", err)
 	}
 	defer objs.Close()
 

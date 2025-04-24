@@ -35,9 +35,10 @@ lightmon is a lightweight, Docker/K8s container-aware network traffic monitoring
 
 ```sh
 # Basic dependencies
+sudo apt update
 sudo apt install -y llvm16 clang16
 
-# Go environment (recommended 1.18+)
+# Go environment (recommended 1.23+)
 ```
 
 ### Build & Install
