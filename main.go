@@ -32,7 +32,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc clang16 -cflags "-O2 -g -Wall -Werror" -target amd64,arm64 bpf fentryTcpConnectSrc.c -- -Iheaders/
+//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc clang -cflags "-O2 -g -Wall -Werror" -target amd64,arm64 bpf fentryTcpConnectSrc.c -- -Iheaders/
 
 type Config struct {
 	IPv6            bool   `yaml:"ipv6"`
@@ -104,7 +104,7 @@ func initConfigs() {
 	ebpfType = config.EbpfType
 
 	Set_Docker_Path(config.DockerRuntime, config.DockerData)
-	if ok := Runtime_Verifier(); !ok {
+	if ok := Runtime_Verifier(ebpfType); !ok {
 		fmt.Println("Docker Runtime Verifier failed. please use -docker_runtime and -docker_data args to specify docker env path.")
 		os.Exit(1)
 	}

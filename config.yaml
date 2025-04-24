@@ -1,8 +1,8 @@
 ipv6: false
 k8s: false
 format: "logfile"
-logPath: "/data/lightMon-ebpf/logs"
+logPath: "."
 docker_runtime: "/run/docker"
-docker_data: "/data/docker"
+docker_data: "/var/lib/docker"
 exclude: "keyword='qcloud'||dport='53'"
 ebpfType: 0

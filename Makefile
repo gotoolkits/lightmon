@@ -15,3 +15,5 @@ clean:
 	rm -f bpf_bpfel_*.go
 	rm -f bin/amd64/${BINARY_NAME}
 	rm -f bin/arm64/${BINARY_NAME}
+run:
+	sudo bin/amd64/${BINARY_NAME} -c ./config.yaml

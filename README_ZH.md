@@ -36,7 +36,7 @@ lightmon 是一款基于eBPF技术轻量级、Docker/K8s容器感知的网络流
 ```sh
 # 基础依赖
 sudo apt update
-sudo apt install -y llvm16 clang16
+sudo apt install -y llvm clang
 
 # Go环境 (建议1.23+)
 ```

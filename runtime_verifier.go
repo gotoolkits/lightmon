@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 var (
@@ -16,7 +18,19 @@ func Set_Docker_Path(docker_rumtime,docker_data string) {
 	DOCKER_DATA_DIR = docker_data
 }
 
-func Runtime_Verifier() bool{
+func Runtime_Verifier(ebpf int) bool{
+	if ebpf == 0  {
+		if ok,err:=isFunctionAvailable("tcp_connect");!ok {
+			fmt.Println("ERROR: ",err)
+			return false
+		}
+	} else {
+		if ok,err:=PathExists(SYS_ENTER_CONNECT);!ok{
+			fmt.Println("ERROR: ",err)
+			return false
+		}
+	}
+
 	if ok,err:=PathExists(SYS_ENTER_CONNECT);!ok{
 		fmt.Println("ERROR: ",err)
 		return false
@@ -45,4 +59,31 @@ func PathExists(path string) (bool, error) {
 		return false, err
 	}
 	return false, err
+}
+
+func isFunctionAvailable(functionName string) (bool, error) {
+	file, err := os.Open("/proc/kallsyms")
+	if err != nil {
+		return false, fmt.Errorf("failed to open /proc/kallsyms: %v", err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+		if len(fields) < 3 {
+			continue
+		}
+	
+		if fields[2] == functionName {
+			return true, nil
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return false, fmt.Errorf("error reading /proc/kallsyms: %v", err)
+	}
+
+	return false, nil
 }
