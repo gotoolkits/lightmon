@@ -5,6 +5,16 @@ import (
 	"time"
 )
 
+type TcpEvent struct {
+    Comm   [16]uint8
+    Pid    uint32     
+    Uid    uint32    
+    Sport  uint16     
+    Dport  uint16 
+    Saddr  uint32
+    Daddr  uint32     
+	TsUs   uint64
+}
 // Event is a common event interface
 type Event struct {
 	TsUs uint64
@@ -35,8 +45,8 @@ type OtherSocketEvent struct {
 }
 
 type EventPayload struct {
-	KernelTime    string  `json:"kernelTime"`
-	GoTime        time.Time `json:"goTime"`
+	// KernelTime    string  `json:"kernelTime"`
+	UTime        time.Time `json:"uTime"`
 	AddressFamily string `json:"addressFamily"`
 	Pid           uint32 `json:"pid"`
 	ProcessPath   string `json:"processPath"`

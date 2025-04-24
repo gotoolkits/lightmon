@@ -83,12 +83,14 @@ func (l logFileOutput) PrintLine(e EventPayload) {
 		"procPath":e.ProcessPath,
 		"procArgs": e.ProcessArgs,
 		"ipv6": ipv6,
+		"sip":e.SrcIP.String(),
+		"sport": strconv.Itoa(int(e.SrcPort)),
 		"dip": e.DestIP.String(),
 		"dport": strconv.Itoa(int(e.DestPort)),
 		"conatiner": e.ConatinerName,
 	}
 
-	l.logger.WithFields(logF).Info()
+	l.logger.WithFields(logF).Info("ebpf")
 }
 
 
@@ -136,29 +138,31 @@ func (t tableOutput) PrintHeader() {
 	var header string
 	var args []interface{}
 
-	header = "%-9s %-16s %-10s %-9s %-42s %-20s %s\n"
-	args = []interface{}{"TIME", "USER", "PID", "AF", "DESTINATION","CONTAINER", "PROCESS"}
+	header = "%-9s %-10s %-9s %-6s %-20s %-20s %-15s %s\n"
+	args = []interface{}{"TIME", "USER", "PID", "AF","SRC", "DEST","CONTAINER", "PROCESS"}
 
 	fmt.Printf(header, args...)
 }
 
 func (t tableOutput) PrintLine(e EventPayload) {
+	// fmt.Println("debug: ",e)
 	if t.excludeParam != "" {
 		filter := filter.ParseExcludeParam(t.excludeParam)
 		if filter.ShouldExclude(e) {
 			return
 		}
 	}
-	time := e.GoTime.Format("15:04:05")
+	time := e.UTime.Format("15:04:05")
 	dest := e.DestIP.String() + " " + strconv.Itoa(int(e.DestPort))
+	src :=  e.SrcIP.String() + " " + strconv.Itoa(int(e.SrcPort))
 
-	var header string
+	var line string
 	var args []interface{}
-	var addrFamily = ""
+	var addrFamily = "v4"
 
-	if (e.AddressFamily == "AF_INET"){
-		addrFamily = "ipv4"
-	}
+	// if (e.AddressFamily == "AF_INET"){
+	// 	addrFamily = "ipv4"
+	// }
 	if (e.AddressFamily == "AF_INET6"){ 
 		addrFamily = "ipv6"
 		if !t.ipv6 {
@@ -166,12 +170,11 @@ func (t tableOutput) PrintLine(e EventPayload) {
 		}
 	}
 
-	header = "%-9s %-16s %-10d %-9s %-42s %-20s %s\n"
-	args = []interface{}{time, e.User, e.Pid, addrFamily, dest,e.ConatinerName,e.ProcessPath + " " + e.ProcessArgs}
+	line = "%-9s %-10s %-9d %-6s %-20s %-20s %-15s %s\n"
+	args = []interface{}{time, e.User, e.Pid, addrFamily,src, dest,e.ConatinerName,e.ProcessPath + " " + e.ProcessArgs}
 
 
-	fmt.Printf(header, args...)
+	fmt.Printf(line, args...)
 }
-
 
 

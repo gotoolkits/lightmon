@@ -72,7 +72,7 @@ struct sys_enter_connect_args {
 };
 
 SEC("tracepoint/syscalls/sys_enter_connect")
-int TraceTcpEvent(struct sys_enter_connect_args *ctx) {
+int TcpConnect(struct sys_enter_connect_args *ctx) {
     if (!ctx || !ctx->addr)
         return 0;
 

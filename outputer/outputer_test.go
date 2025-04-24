@@ -79,7 +79,7 @@ func TestTableOutput_PrintLine(t *testing.T) {
 	}{
 		{"ipv4 event", false, EventPayload{
 			AddressFamily: "AF_INET",
-			GoTime:       time.Now(),
+			UTime:       time.Now(),
 			User:         "test",
 			Pid:          123,
 			DestIP:       []byte{127, 0, 0, 1},
