@@ -56,11 +56,14 @@ make build
 ### Basic Usage
 
 ```sh
-# Run with default configuration
-./lightmon
-
 # Specify config file
-./lightmon -c config.yaml
+bin/amd64/lightmon -c ./config.yaml
+bin/arm64/lightmon -c ./config.yaml
+
+# Run with default configuration
+bin/amd64/lightmon
+bin/arm64/lightmon
+
 ```
 
 ### Output Formats
@@ -69,8 +72,8 @@ lightmon supports multiple output formats ('-f'):
 
 1. **LOG format** (default)
    ```
-   [container] [dest IP] [dest port] [protocol] [level] [message] [PID] [process args] [process name] [time] [user]
-   {"conatiner":"dreamy_carson","dip":"183.2.172.17","dport":"65535","ipv6":0,"level":"info","msg":"","pid":"501750","procArgs":"www.baidu.com","procPath":"/usr/bin/busybox","time":"2025-04-17T14:01:48+08:00","user":"root"}
+   [container] [dest IP] [dest port] [protocol] [level] [message] [PID] [process args] [process name] [src ip] [src port] [time] [user]
+   {"conatiner":"dreamy_carson","dip":"183.2.172.17","dport":"65535","ipv6":0,"level":"info","msg":"","pid":"501750","procArgs":"www.baidu.com","procPath":"/usr/bin/busybox","sip":"10.1.8.14","sport":"7825","time":"2025-04-17T14:01:48+08:00","user":"root"}
    ```
 
 2. **JSON format** (use `-output json`)
@@ -91,11 +94,11 @@ lightmon supports multiple output formats ('-f'):
 
 3. **Table format** (use `-output table`)
    ```
-   +---------------------+-------+--------+-------+-----------------+------------------------+
-   | TIME     | USER  | PID   | AF    | DESTINATION  | CONTAINER    |     PROCESS            |
-   +---------------------+-------+--------+-------+-----------------+------------------------+
-   | 14:05:56 | root  | 1234  | ipv4  | 10.0.0.1:80  | web-server   | /usr/local/bin/python  |
-   +---------------------+-------+--------+-------+-----------------+------------------------+
+   +----------+-------+-------+------+-----------------+-----------------+--------------+------------------------+
+   | TIME     | USER  | PID   | AF   |  SRC            | DEST            | CONTAINER    |     PROCESS            |
+   +----------+-------+-------+------+-----------------+-----------------+---------------------------------------+
+   | 14:05:56 | root  | 1234  | v4   | 10.4.0.16:3425  | 10.0.0.1:80     | web-server   | /usr/local/bin/python  |
+   +----------+-------+-------+------+-----------------+-----------------+---------------------------------------+
    ```
 
 ### Filtering
