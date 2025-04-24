@@ -1,6 +1,7 @@
 lightMon-ebpf
 TODO.md
 bin/**/lightMon-ebpf
+bin/**/lightmon
 
 .DS_Store
 bin/.DS_Store
