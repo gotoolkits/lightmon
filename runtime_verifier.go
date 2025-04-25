@@ -18,24 +18,7 @@ func Set_Docker_Path(docker_rumtime,docker_data string) {
 	DOCKER_DATA_DIR = docker_data
 }
 
-func Runtime_Verifier(ebpf int) bool{
-	if ebpf == 0  {
-		if ok,err:=isFunctionAvailable("tcp_connect");!ok {
-			fmt.Println("ERROR: ",err)
-			return false
-		}
-	} else {
-		if ok,err:=PathExists(SYS_ENTER_CONNECT);!ok{
-			fmt.Println("ERROR: ",err)
-			return false
-		}
-	}
-
-	if ok,err:=PathExists(SYS_ENTER_CONNECT);!ok{
-		fmt.Println("ERROR: ",err)
-		return false
-	}
-
+func Docker_Runtime_Verifier() bool{
 	if ok,err:=PathExists(DOCKER_RUNTIME_DIR);!ok{
 		fmt.Println("ERROR: ",err)
 		return false
@@ -47,6 +30,22 @@ func Runtime_Verifier(ebpf int) bool{
 		return false
 	}
 
+	return true
+}
+
+func TP_Runtime_Verifier() bool{
+	if ok,err:=PathExists(SYS_ENTER_CONNECT);!ok{
+			fmt.Println("ERROR: ",err)
+			return false
+	}
+	return true
+}
+
+func Tracing_Runtime_Verifier(fentryFn string) bool{
+	if ok,err:=isFunctionAvailable(fentryFn);!ok {
+		fmt.Println("ERROR: ",err)
+		return false
+	}
 	return true
 }
 

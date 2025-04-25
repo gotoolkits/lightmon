@@ -24,6 +24,7 @@ import (
 	. "github.com/gotoolkits/lightmon/outputer"
 
 	"github.com/cilium/ebpf"
+	"github.com/cilium/ebpf/features"
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/perf"
 	"github.com/cilium/ebpf/ringbuf"
@@ -104,7 +105,7 @@ func initConfigs() {
 	ebpfType = config.EbpfType
 
 	Set_Docker_Path(config.DockerRuntime, config.DockerData)
-	if ok := Runtime_Verifier(ebpfType); !ok {
+	if ok := Docker_Runtime_Verifier(); !ok {
 		fmt.Println("Docker Runtime Verifier failed. please use -docker_runtime and -docker_data args to specify docker env path.")
 		os.Exit(1)
 	}
@@ -122,6 +123,13 @@ func runForLocalDockerInfos(){
 }
 
 func setupBpfFentryWorkers() {
+	err := features.HaveProgramType(ebpf.Tracing)
+	if errors.Is(err, ebpf.ErrNotSupported) {
+		log.Fatalln("tracing program type is not supported")
+	}
+	if err != nil {
+		panic(err)
+	}
 
 	stopper := make(chan os.Signal, 1)
 	signal.Notify(stopper, os.Interrupt, syscall.SIGTERM)
@@ -232,6 +240,18 @@ func newGenericTcpEventPayload(event *TcpEvent) EventPayload {
 }
 
 func setupBpfTPWorkers() {
+	if !TP_Runtime_Verifier() {
+		log.Fatalln("tracepoint program type is not supported")
+	}
+
+	err := features.HaveProgramType(ebpf.TracePoint)
+	if errors.Is(err, ebpf.ErrNotSupported) {
+		log.Fatalln("tracepoint program type is not supported")
+	}
+	if err != nil {
+		panic(err)
+	}
+
 	stopper := make(chan os.Signal, 1)
 	signal.Notify(stopper, os.Interrupt, syscall.SIGTERM)
 

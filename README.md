@@ -164,7 +164,8 @@ lightmon/
 ├── headers/       # eBPF headers
 ├── linux/         # Linux-specific functions
 ├── outputer/      # Output handlers
-├── sysEnterConnectSrc.c  # Main eBPF program
+├── fentryTcpConnectSrc.c # Fentry eBPF program type 
+├── sysEnterConnectSrc.c  # Tracepoint eBPF program
 └── main.go        # Program entry
 ```
 
