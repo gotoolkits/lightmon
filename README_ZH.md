@@ -2,6 +2,9 @@
 
 lightmon 是一款基于eBPF技术轻量级、Docker/K8s容器感知的网络流量监控工具。它能够实时捕获并分析主机及容器应用程序建立的网络连接，提供多种格式的监控数据输出，适用于系统监控、安全审计和网络故障排查等场景。
 
+## DeepWiki Docs
+点击查看 [DeepWiki Docs](https://deepwiki.com/gotoolkits/lightmon) 文档
+
 ## 架构概述
 
 ```

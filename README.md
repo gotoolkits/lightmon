@@ -2,6 +2,9 @@
 
 lightmon is a lightweight, Docker/K8s container-aware network traffic monitoring tool based on eBPF technology. It can capture and analyze network connections established by host and container applications in real-time, providing monitoring data in multiple formats. Suitable for system monitoring, security auditing, and network troubleshooting scenarios.
 
+## DeepWiki Docs
+[DeepWiki Docs](https://deepwiki.com/gotoolkits/lightmon) 
+
 ## Architecture Overview
 
 ```
